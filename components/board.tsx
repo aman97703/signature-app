@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import jsPDF from "jspdf";
 
 interface currentPathProps {
   x: number;
@@ -201,6 +202,25 @@ const Board = () => {
     }
   };
 
+  const downloadImage = () => {
+    if (canvasRef.current) {
+      const dataURL = canvasRef.current.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.href = dataURL;
+      link.download = "signature.png";
+      link.click();
+    }
+  };
+
+  const downloadPDF = () => {
+    if (canvasRef.current) {
+      const doc = new jsPDF("p", "mm", "a4");
+      const imgData = canvasRef.current.toDataURL("image/png");
+      doc.addImage(imgData, "PNG", 10, 10, 190, 0); // Adjust x, y, width, height as needed
+      doc.save("signature.pdf");
+    }
+  };
+
   return (
     <div className="w-full h-full flex-1 max-w-5xl m-auto">
       <canvas
@@ -256,7 +276,7 @@ const Board = () => {
           onChange={(e) => changeWidth(Number(e.target.value))}
         />
       </div>
-      <div className="flex justify-center items-center gap-5 mt-5">
+      <div className="flex justify-center items-center gap-5 mt-5 flex-wrap">
         <button
           className="py-2 px-10 bg-red-500 rounded-md text-base text-white"
           onClick={clearDrawing}
@@ -268,6 +288,18 @@ const Board = () => {
           onClick={undoDrawing}
         >
           Undo
+        </button>
+        <button
+          className="py-2 px-10 bg-black rounded-md text-base text-white"
+          onClick={downloadImage}
+        >
+          Download Image
+        </button>
+        <button
+          className="py-2 px-10 bg-black rounded-md text-base text-white"
+          onClick={downloadPDF}
+        >
+          Download Pdf
         </button>
       </div>
     </div>
